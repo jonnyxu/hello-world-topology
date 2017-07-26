@@ -37,6 +37,7 @@ public class HelloWorldSpout extends BaseRichSpout {
 	/**
 	 * 维持一个collector对象 
 	 */
+	@Override
 	public void open(Map conf, TopologyContext context, SpoutOutputCollector collector) {
 		this.collector = collector;
 
@@ -48,6 +49,7 @@ public class HelloWorldSpout extends BaseRichSpout {
 	 * NOTE: Values是一个ArrarList实现，它的元素就是传入构造器的参数。
 	 * 而且nextTuple()会在同一个循环内被ack()和fail()周期性的调用，没有任务时它必须释放对线程的控制，其它方法才有机会得以执行。
 	 */
+	@Override
 	public void nextTuple() {
 
 		Utils.sleep(60000);
@@ -68,6 +70,7 @@ public class HelloWorldSpout extends BaseRichSpout {
 	/**
 	 * 声明输出参数: "sentence"
 	 */
+	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		declarer.declare(new Fields("sentence"));
 	}

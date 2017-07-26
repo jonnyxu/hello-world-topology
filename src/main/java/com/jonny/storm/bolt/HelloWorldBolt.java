@@ -26,28 +26,34 @@ public class HelloWorldBolt extends BaseRichBolt {
 
 	private OutputCollector		collector;
 
+	@Override
 	public void prepare(Map stormConf, TopologyContext context, OutputCollector collector) {
 		// TODO Auto-generated method stub
 		this.collector = collector;
 	}
 
 	/**
-	 * 接收文本，并计数。
+	 * 从Spout中接收文本，并进行计数。
 	 */
+	@Override
 	public void execute(Tuple input) {
 
-		String test = input.getStringByField("sentence");
+		String sentence = input.getStringByField("sentence");
+		System.out.println("Input from Spout is: [" + sentence + "]");
 
-		if ("Hello World".equals(test)) {
+		if ("Hello World".equals(sentence)) {
 			myCount++;
 			System.out.println("Found a Hello World! My Count is now: " + Integer.toString(myCount));
 		}
 
-		// 对元组作为应答 
-		// Storm提供了另一个用来实现bolt的接口，IBasicBolt。对于该接口的实现类的对象，会在执行execute方法之后自动调用ack方法
-		//collector.ack(input);
+		/**
+		 *  对元组进行应答 
+		 *  Storm提供了另外一个用来实现bolt的接口-IBasicBolt 和 抽象类-BaseBasicBolt。对于该接口的实现类的对象，它会在执行execute方法之后自动调用ack方法。
+		 */
+		collector.ack(input);
 	}
 
+	@Override
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
 		// TODO Auto-generated method stub
 	}

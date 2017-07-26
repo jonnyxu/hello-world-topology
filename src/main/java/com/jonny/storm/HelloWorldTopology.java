@@ -32,7 +32,7 @@ public class HelloWorldTopology {
 	 *  	./storm/bin/storm jar hello-world-topology-1.0-SNAPSHOT.jar com.jonny.storm.HelloWorldTopology HelloWorldTopology
 	 *  
 	 *  Stopping Storm Topology:
-	 *  	storm kill {toponame} 
+	 *  	./storm/bin/storm kill HelloWorldTopology
 	 *  
 	 * @param args
 	 * @throws AlreadyAliveException
@@ -41,14 +41,27 @@ public class HelloWorldTopology {
 	 */
 
 	public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException, AuthorizationException {
+
 		/**
 		 * 定义拓扑
 		 */
 		TopologyBuilder builder = new TopologyBuilder();
 
-		builder.setSpout("HelloWorldSpout", new HelloWorldSpout(), 10);
+		builder.setSpout("HelloWorldSpout", new HelloWorldSpout(), 3);
 
-		// 在spout和bolts之间通过shuffleGrouping方法连接。这种分组方式决定了Storm会以随机分配方式从源节点向目标节点发送消息。
+		/**
+		 *  在spout和bolts之间通过shuffleGrouping方法连接。这种分组方式决定了Storm会以随机分配方式从源节点向目标节点发送消息。
+		 *  
+		 *  Storm中8种流分组的方式：
+		 *  fieldsGrouping（字段分组）：根据指定字段对流进行分组
+		 *  globalGrouping（全局分组）：全部流发送到同一个Bolt中
+		 *  shuffleGrouping（随机分组）：最常用的分组方式，随机分发元组
+		 *  localOrShuffleGrouping（本地或者随机分组）：如果目标Bolt在同一工作进程存在一个或多个任务，会随机分配元组给这些任务
+		 *  noneGrouping（无分组）：同随机分组
+		 *  allGrouping（广播分组）：将分发流到所有的Bolt中，常用于更新缓存
+		 *  directGrouping（直接分组）：只能在已声明为直接流的流中所使用，并且元组必须使用emitDirect方法来发射
+		 *  customGrouping（自定义分组）：实现CustomStreamGrouping接口来创建自定义的流分组
+		 */
 		builder.setBolt("HelloWorldBolt", new HelloWorldBolt(), 2).shuffleGrouping("HelloWorldSpout");
 
 		/**
